@@ -1,0 +1,5 @@
+const CHANGE_CUSTOMER = 'CHANGE_CUSTOMER';
+
+export default {
+    CHANGE_CUSTOMER
+}
