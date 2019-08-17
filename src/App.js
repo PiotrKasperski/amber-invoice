@@ -6,13 +6,8 @@ import ProductConteiner from "./app/products/components/ProductContainer";
 import SellerContainer from "./app/seller/components/SellerContainer";
 import CustomerContainer from "./app/customer/components/CustomerContainer";
 import InvoiceContainer from "./app/invoice/components/invoiceContainer";
-import {
-    BrowserRouter as Router,
-    Route,
-    Link
-} from 'react-router-dom';
-import Button from "@material-ui/core/Button";
-import {Paper} from "@material-ui/core";
+import {BrowserRouter as Router, Route} from 'react-router-dom';
+import DockSaverContainer from "./app/DocxSaver/DocxSaverContainer";
 
 
 function App() {
@@ -29,6 +24,8 @@ function App() {
             <Route path="/seller" component={SellerContainer}/>
             <Route path="/customer" component={CustomerContainer}/>
             <Route path="/products" component={ProductConteiner}/>
+
+            <DockSaverContainer/>
 
         </Router>
 
