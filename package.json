@@ -6,8 +6,8 @@
   "dependencies": {
     "@material-ui/core": "^4.2.1",
     "currency.js": "^1.2.2",
+    "docx": "^4.7.1",
     "electron-is-dev": "^1.1.0",
-    "docx": "^5.0.0-rc5",
     "fs": "0.0.1-security",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",

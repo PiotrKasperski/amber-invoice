@@ -8,8 +8,8 @@ import CustomerContainer from "./app/customer/components/CustomerContainer";
 import InvoiceContainer from "./app/invoice/components/invoiceContainer";
 import {BrowserRouter as Router, Link, Route} from 'react-router-dom';
 import Button from "@material-ui/core/Button";
-import {BrowserRouter as Router, Route} from 'react-router-dom';
-import DockSaverContainer from "./app/DocxSaver/DocxSaverContainer";
+
+import DocxSaverContainer from "./app/DocxSaver/DocxSaverContainer";
 
 
 function App() {
@@ -30,7 +30,7 @@ function App() {
             <Route path="/customer" component={CustomerContainer}/>
             <Route path="/products" component={ProductConteiner}/>
 
-            <DockSaverContainer/>
+            <DocxSaverContainer/>
 
         </Router>
 
