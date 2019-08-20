@@ -4,19 +4,32 @@ import currency from 'currency.js';
 
 const initProducts = {
     list: [
-        /*{
+        {
             key: 0,
             name: 'Kabel',
             symbol: '',
-            unit: '',
-            count: 0,
-            unitPrice: currency(0),
-            nettoPrice: currency(0),
+            unit: 'szt',
+            count: 44,
+            unitPrice: currency(12.50),
+            nettoPrice: currency(550),
             vat:0.23,
-            vatPrice:currency(0),
-            bruttoPrice: currency(0)
+            vatPrice: currency(126.50),
+            bruttoPrice: currency(676.50)
 
-        }*/
+        },
+        {
+            key: 1,
+            name: 'gniazdo',
+            symbol: '',
+            unit: 'mb',
+            count: 150,
+            unitPrice: currency(4.60),
+            nettoPrice: currency(690),
+            vat: 0.23,
+            vatPrice: currency(158.70),
+            bruttoPrice: currency(848.70)
+
+        }
     ]
 };
 const changeProduct = (state, item) => {

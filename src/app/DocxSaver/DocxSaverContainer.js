@@ -1,31 +1,41 @@
 import React from 'react'
-import {AlignmentType, Document, Packer, Paragraph, Table, TabStopItem, TabValue, TextRun, VerticalAlign} from "docx";
+import {
+    AlignmentType,
+    BorderStyle,
+    Document,
+    MaxRightTabStop,
+    Packer,
+    Paragraph,
+    Table,
+    TextRun,
+    VerticalAlign
+} from "docx";
 
 import Button from "@material-ui/core/Button";
 import {saveSync} from "save-file";
+import {connect} from "react-redux";
 
 //import {Columns} from "docx/build/file/document/body/section-properties/columns/columns";
 
 
-const DocxSaverContainer = () => {
-
+const DocxSaverContainer = ({invoice, seller, customer, products}) => {
+    console.log('propsy', invoice, seller, customer, products);
     const locationParagraph = (document) => {
         const paragraph = new Paragraph({
             children: [
-                new TextRun('Miejscowość: Częstochowa').break(),
-                new TextRun('Data wystawienia: 20.01.2011').break(),
-                new TextRun('Data sprzedaży: 20.01.2011').break(),
+                new TextRun('Miejscowość: ' + invoice.location).break(),
+                new TextRun('Data wystawienia: ' + invoice.date).break(),
+                new TextRun('Data sprzedaży: ' + invoice.sellDate).break(),
             ],
             alignment: AlignmentType.RIGHT
         });
-
         return paragraph
     };
 
     const titleParagraph = () => {
         const paragraph = new Paragraph({
             children: [
-                new TextRun('FAKTURA VAT NR 1052015 orginał')
+                new TextRun('FAKTURA VAT NR ' + invoice.number + ' orginał')
             ],
             alignment: AlignmentType.CENTER
         });
@@ -37,14 +47,33 @@ const DocxSaverContainer = () => {
         const paragraph = new Paragraph({
             children: [
                 new TextRun('Sprzedawca'),
-                new TextRun('Nabywca').tab().tab().tab().tab().tab().tab().tab().tab(),
+                new TextRun('Nabywca').tab(),
                 new TextRun('').break(),
 
-                new TextRun('Grzegorz'),
-                new TextRun('orlen').tab().tab().tab().tab().tab().tab().tab().tab(),
+                new TextRun(seller.nameLine1),
+                new TextRun(customer.nameLine1).tab(),
+                new TextRun('').break(),
+
+                new TextRun(seller.nameLine2),
+                new TextRun(customer.nameLine2).tab(),
+                new TextRun('').break(),
+
+                new TextRun(seller.addressLine1),
+                new TextRun(customer.addressLine1).tab(),
+                new TextRun('').break(),
+
+
+                new TextRun(seller.addressLine2),
+                new TextRun(customer.addressLine2).tab(),
+                new TextRun('').break(),
+
+
+                new TextRun('NIP ' + seller.nip + ' REGON ' + seller.regon),
+                new TextRun('NIP ' + customer.nip + ' REGON ' + customer.regon).tab(),
+                new TextRun('').break(),
 
             ],
-            tabStop: {right: new TabStopItem(TabValue.RIGHT, 7000)},
+            tabStop: {maxRight: MaxRightTabStop},
             alignment: AlignmentType.CENTER
         });
 
@@ -79,7 +108,7 @@ const DocxSaverContainer = () => {
 
     const productTable = () => {
         const table = new Table({
-            rows: 2,
+            rows: products.list.length + 2,
             columns: 10,
             width: 0,
             columnWidths: [380, 2889, 755, 360, 600, 626, 800, 755, 800, 800],
@@ -97,19 +126,33 @@ const DocxSaverContainer = () => {
         row.getCell(8).add(new Paragraph('wartość podatku zł')).setVerticalAlign(VerticalAlign.CENTER);
         row.getCell(9).add(new Paragraph('wartość brutto zł')).setVerticalAlign(VerticalAlign.CENTER);
 
-        for (let i = 1; i < 2; i++) {
-            const tmpRow = table.getRow(i);
-            tmpRow.getCell(0).add(new Paragraph(i + '.')).setVerticalAlign(VerticalAlign.CENTER);
-            tmpRow.getCell(1).add(new Paragraph('Korytko kablowe perf. stal ocynkk 100x42 L2mb')).setVerticalAlign(VerticalAlign.CENTER);
-            //tmpRow.getCell(2).add(new Paragraph('')).setVerticalAlign(VerticalAlign.CENTER);
-            tmpRow.getCell(3).add(new Paragraph('szt')).setVerticalAlign(VerticalAlign.CENTER);
-            tmpRow.getCell(4).add(new Paragraph('44')).setVerticalAlign(VerticalAlign.CENTER);
-            tmpRow.getCell(5).add(new Paragraph('12,50')).setVerticalAlign(VerticalAlign.CENTER);
-            tmpRow.getCell(6).add(new Paragraph('550,00')).setVerticalAlign(VerticalAlign.CENTER);
-            tmpRow.getCell(7).add(new Paragraph('23')).setVerticalAlign(VerticalAlign.CENTER);
-            tmpRow.getCell(8).add(new Paragraph('126,50')).setVerticalAlign(VerticalAlign.CENTER);
-            tmpRow.getCell(9).add(new Paragraph('676,50')).setVerticalAlign(VerticalAlign.CENTER);
-        }
+        products.list.forEach((product, index) => {
+            const tmpRow = table.getRow(index + 1);
+            tmpRow.getCell(0).add(new Paragraph(index + '.')).setVerticalAlign(VerticalAlign.CENTER);
+            tmpRow.getCell(1).add(new Paragraph(product.name)).setVerticalAlign(VerticalAlign.CENTER);
+            tmpRow.getCell(2).add(new Paragraph(product.symbol)).setVerticalAlign(VerticalAlign.CENTER);
+            tmpRow.getCell(3).add(new Paragraph(product.unit)).setVerticalAlign(VerticalAlign.CENTER);
+            tmpRow.getCell(4).add(new Paragraph(product.count + '')).setVerticalAlign(VerticalAlign.CENTER);
+            tmpRow.getCell(5).add(new Paragraph(product.unitPrice.value + '')).setVerticalAlign(VerticalAlign.CENTER);
+            tmpRow.getCell(6).add(new Paragraph(product.nettoPrice.value + '')).setVerticalAlign(VerticalAlign.CENTER);
+            tmpRow.getCell(7).add(new Paragraph(product.vat + '')).setVerticalAlign(VerticalAlign.CENTER);
+            tmpRow.getCell(8).add(new Paragraph(product.vatPrice.value + '')).setVerticalAlign(VerticalAlign.CENTER);
+            tmpRow.getCell(9).add(new Paragraph(product.bruttoPrice.value + '')).setVerticalAlign(VerticalAlign.CENTER);
+        });
+
+        const summaryRoe = table.getRow(products.list.length + 1);
+        summaryRoe.mergeCells(0, 9);
+        const cell = summaryRoe.getCell(0);
+        cell.Borders.addBottomBorder(BorderStyle.NONE, 0, "white");
+        cell.Borders.addLeftBorder(BorderStyle.NONE, 0, "white");
+        cell.Borders.addRightBorder(BorderStyle.NONE, 0, "white");
+        cell.setVerticalAlign(VerticalAlign.CENTER);
+        summaryRoe.getCell(0).add(new Paragraph({
+            children: [
+                new TextRun('RAZEM BRUTTO: 5810,64 ZŁ')
+            ],
+            alignment: AlignmentType.RIGHT
+        }));
 
 
         //table.setWidth("100%", WidthType.PERCENTAGE);
@@ -127,8 +170,6 @@ const DocxSaverContainer = () => {
                 productTable()
             ]
         });
-        //document.add(productTable());
-
         console.log(document);
 
         Packer.toBlob(document).then((blob) => {
@@ -141,4 +182,11 @@ const DocxSaverContainer = () => {
     return <div><Button onClick={onSave}>save</Button></div>
 };
 
-export default DocxSaverContainer
+const mapStateToProps = (state) => ({
+    invoice: state.invoice,
+    seller: state.seller,
+    customer: state.customer,
+    products: state.products
+});
+
+export default connect(mapStateToProps, {})(DocxSaverContainer)
